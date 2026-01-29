@@ -1,59 +1,201 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Test Rumahweb - Laravel REST API dengan JWT
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+REST API sederhana menggunakan Laravel 12 dan JWT Authentication.
 
-## About Laravel
+## Requirements
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- PHP >= 8.2
+- Composer
+- MySQL / MariaDB
+- Node.js & NPM
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Instalasi
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 1. Clone Repository
 
-## Learning Laravel
+```bash
+git clone <repository-url>
+cd test_rumahweb
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### 2. Install Dependencies
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+composer install
+npm install
+```
 
-## Laravel Sponsors
+### 3. Setup Environment
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+cp .env.example .env
+php artisan key:generate
+php artisan jwt:secret
+```
 
-### Premium Partners
+### 4. Konfigurasi Database
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Edit file `.env` dan sesuaikan konfigurasi database:
 
-## Contributing
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=rumahweb
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 5. Jalankan Migrasi
 
-## Code of Conduct
+```bash
+php artisan migrate
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 6. (Opsional) Buat User Test
 
-## Security Vulnerabilities
+```bash
+php artisan tinker
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```php
+User::create(['name'=>'Test User', 'email'=>'test@example.com', 'password'=>Hash::make('password123')]);
+```
 
-## License
+## Menjalankan Project
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+php artisan serve
+```
+
+Server akan berjalan di `http://localhost:8000`
+
+## API Endpoints
+
+| Method | Endpoint          | Deskripsi                  | Auth |
+| ------ | ----------------- | -------------------------- | ---- |
+| POST   | `/api/login`      | Login & dapatkan JWT token | ❌   |
+| GET    | `/api/users`      | List semua users           | ✅   |
+| GET    | `/api/users/{id}` | Get user by ID             | ✅   |
+| POST   | `/api/users`      | Create user baru           | ✅   |
+| PUT    | `/api/users/{id}` | Update user                | ✅   |
+
+## Contoh Penggunaan
+
+### 1. Login (Dapatkan Token)
+
+```bash
+curl -X POST http://localhost:8000/api/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","password":"password123"}'
+```
+
+**Response:**
+
+```json
+{
+    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
+    "token_type": "bearer",
+    "expires_in": 3600
+}
+```
+
+---
+
+### 2. GET /api/users (List Semua Users)
+
+```bash
+curl http://localhost:8000/api/users \
+  -H "Authorization: Bearer <token>" \
+  -H "Accept: application/json"
+```
+
+**Response:**
+
+```json
+[
+    {
+        "id": 1,
+        "name": "Test User",
+        "email": "test@example.com",
+        "created_at": "2026-01-29T10:00:00.000000Z"
+    }
+]
+```
+
+---
+
+### 3. GET /api/users/{id} (Get User by ID)
+
+```bash
+curl http://localhost:8000/api/users/1 \
+  -H "Authorization: Bearer <token>" \
+  -H "Accept: application/json"
+```
+
+**Response:**
+
+```json
+{
+    "id": 1,
+    "name": "Test User",
+    "email": "test@example.com",
+    "created_at": "2026-01-29T10:00:00.000000Z"
+}
+```
+
+---
+
+### 4. POST /api/users (Create User Baru)
+
+```bash
+curl -X POST http://localhost:8000/api/users \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{"name":"User Baru","email":"baru@example.com","password":"password123"}'
+```
+
+**Response (201 Created):**
+
+```json
+{
+    "id": 2,
+    "name": "User Baru",
+    "email": "baru@example.com",
+    "created_at": "2026-01-29T10:30:00.000000Z"
+}
+```
+
+---
+
+### 5. PUT /api/users/{id} (Update User)
+
+```bash
+curl -X PUT http://localhost:8000/api/users/1 \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{"name":"Nama Updated"}'
+```
+
+**Response (200 OK):**
+
+```json
+{
+    "id": 1,
+    "name": "Nama Updated",
+    "email": "test@example.com",
+    "created_at": "2026-01-29T10:00:00.000000Z"
+}
+```
+
+## Postman Collection
+
+Import file `Test Rumahweb.postman_collection.json` ke Postman untuk testing API.
+
+## Tech Stack
+
+- Laravel 12
+- JWT Auth (tymon/jwt-auth)
+- MySQL
