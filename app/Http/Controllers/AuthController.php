@@ -4,9 +4,22 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Tymon\JWTAuth\JWTGuard;
 
 class AuthController extends Controller
 {
+    /**
+     * Get the JWT guard.
+     *
+     * @return JWTGuard
+     */
+    protected function guard(): JWTGuard
+    {
+        /** @var JWTGuard $guard */
+        $guard = Auth::guard('api');
+        return $guard;
+    }
+
     /**
      * Handle user login and return JWT token.
      *
@@ -22,14 +35,14 @@ class AuthController extends Controller
 
         $credentials = $request->only('email', 'password');
 
-        if (!$token = auth('api')->attempt($credentials)) {
+        if (!$token = $this->guard()->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
         return response()->json([
             'token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth('api')->factory()->getTTL() * 60
+            'expires_in' => $this->guard()->factory()->getTTL() * 60
         ]);
     }
 }
