@@ -79,6 +79,7 @@ Server akan berjalan di `http://localhost:8000`
 | GET    | `/api/users/{id}` | Get user by ID             | ✅   |
 | POST   | `/api/users`      | Create user baru           | ✅   |
 | PUT    | `/api/users/{id}` | Update user                | ✅   |
+| DELETE | `/api/users/{id}` | Delete user                | ✅   |
 
 ## Contoh Penggunaan
 
@@ -187,6 +188,32 @@ curl -X PUT http://localhost:8000/api/users/1 \
     "name": "Nama Updated",
     "email": "test@example.com",
     "created_at": "2026-01-29T10:00:00.000000Z"
+}
+```
+
+---
+
+### 6. DELETE /api/users/{id} (Delete User)
+
+```bash
+curl -X DELETE http://localhost:8000/api/users/1 \
+  -H "Authorization: Bearer <token>" \
+  -H "Accept: application/json"
+```
+
+**Response (200 OK):**
+
+```json
+{
+    "message": "User deleted successfully"
+}
+```
+
+**Response jika user tidak ditemukan (404):**
+
+```json
+{
+    "message": "No query results for model [App\\Models\\User] 1"
 }
 ```
 
